@@ -1,0 +1,196 @@
+local FrontflipKey = Enum.KeyCode.Z
+local BackflipKey = Enum.KeyCode.X
+local AirjumpKey = Enum.KeyCode.C
+
+local Players = game:GetService("Players")
+local ContextActionService = game:GetService("ContextActionService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+local localPlayer = Players.LocalPlayer
+if not localPlayer then
+    return
+end
+
+local h = 0.0174533
+
+local function doFrontflip()
+    local character = localPlayer.Character
+    if not character then return end
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or not hrp or humanoid:GetState() == Enum.HumanoidStateType.Dead then return end
+
+    humanoid:ChangeState("Jumping")
+    task.wait()
+    humanoid.Sit = true
+    for i = 1, 360 do 
+        task.delay(i/720, function()
+            if humanoid and hrp and humanoid.Parent then
+                humanoid.Sit = true
+                hrp.CFrame *= CFrame.Angles(-h, 0, 0)
+            end
+        end)
+    end
+    task.wait(0.55)
+    if humanoid and humanoid.Parent then humanoid.Sit = false end
+end
+
+local function doBackflip()
+    local character = localPlayer.Character
+    if not character then return end
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if not humanoid or not hrp or humanoid:GetState() == Enum.HumanoidStateType.Dead then return end
+
+    humanoid:ChangeState("Jumping")
+    task.wait()
+    humanoid.Sit = true
+    for i = 1, 360 do
+        task.delay(i/720, function()
+            if humanoid and hrp and humanoid.Parent then
+                humanoid.Sit = true
+                hrp.CFrame *= CFrame.Angles(h, 0, 0)
+            end
+        end)
+    end
+    task.wait(0.55)
+    if humanoid and humanoid.Parent then humanoid.Sit = false end
+end
+
+local function doAirjump()
+    local character = localPlayer.Character
+    if not character then return end
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if not humanoid or humanoid:GetState() == Enum.HumanoidStateType.Dead then return end
+    
+    humanoid:ChangeState("Seated")
+    task.wait()
+    humanoid:ChangeState("Jumping")
+end
+
+local function handleFrontflipInput(actionName, inputState, inputObject)
+    if inputState == Enum.UserInputState.Begin then
+        task.spawn(doFrontflip)
+    end
+end
+
+local function handleBackflipInput(actionName, inputState, inputObject)
+    if inputState == Enum.UserInputState.Begin then
+        task.spawn(doBackflip)
+    end
+end
+
+local function handleAirjumpInput(actionName, inputState, inputObject)
+    if inputState == Enum.UserInputState.Begin then
+        task.spawn(doAirjump)
+    end
+end
+
+ContextActionService:BindAction("CustomFrontflipAction", handleFrontflipInput, false, FrontflipKey)
+ContextActionService:BindAction("CustomBackflipAction", handleBackflipInput, false, BackflipKey)
+ContextActionService:BindAction("CustomAirjumpAction", handleAirjumpInput, false, AirjumpKey)
+
+-- 添加水印
+local function createWatermark()
+    local watermarkGui = Instance.new("ScreenGui")
+    watermarkGui.Name = "Watermark"
+    watermarkGui.Parent = localPlayer:WaitForChild("PlayerGui")
+    watermarkGui.ResetOnSpawn = false
+    watermarkGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    watermarkGui.DisplayOrder = 999
+    
+    local watermarkLabel = Instance.new("TextLabel")
+    watermarkLabel.Name = "WatermarkLabel"
+    watermarkLabel.Size = UDim2.new(0, 200, 0, 30)
+    watermarkLabel.Position = UDim2.new(1, -210, 0, 10)
+    watermarkLabel.BackgroundTransparency = 0.7
+    watermarkLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    watermarkLabel.Text = "关注哔哩哔哩Kenny UID:1531514159"
+    watermarkLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    watermarkLabel.TextSize = 14
+    watermarkLabel.Font = Enum.Font.Gotham
+    watermarkLabel.TextXAlignment = Enum.TextXAlignment.Right
+    watermarkLabel.BorderSizePixel = 0
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = watermarkLabel
+    
+    watermarkLabel.Parent = watermarkGui
+end
+
+createWatermark()
+
+-- 添加手机端专用按钮
+if UserInputService.TouchEnabled then
+    -- 创建手机端按钮
+    local touchGui = Instance.new("ScreenGui")
+    touchGui.Name = "MobileFlipButtons"
+    touchGui.Parent = localPlayer:WaitForChild("PlayerGui")
+    touchGui.ResetOnSpawn = false
+    touchGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    touchGui.DisplayOrder = 10
+    
+    -- 创建按钮容器
+    local buttonContainer = Instance.new("Frame")
+    buttonContainer.Name = "ButtonContainer"
+    buttonContainer.Size = UDim2.new(1, 0, 0, 100)
+    buttonContainer.Position = UDim2.new(0, 0, 1, -100)
+    buttonContainer.BackgroundTransparency = 1
+    buttonContainer.Parent = touchGui
+    
+    -- 创建布局
+    local uiListLayout = Instance.new("UIListLayout")
+    uiListLayout.FillDirection = Enum.FillDirection.Horizontal
+    uiListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    uiListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    uiListLayout.Padding = UDim.new(0, 20)
+    uiListLayout.Parent = buttonContainer
+    
+    -- 创建按钮函数
+    local function createMobileButton(name, text, layoutOrder, callback)
+        local button = Instance.new("TextButton")
+        button.Name = name
+        button.Size = UDim2.new(0, 120, 0, 60)
+        button.LayoutOrder = layoutOrder
+        button.Text = text
+        button.TextScaled = true
+        button.Font = Enum.Font.GothamBold
+        button.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.BorderSizePixel = 0
+        
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 12)
+        corner.Parent = button
+        
+        button.MouseButton1Click:Connect(callback)
+        
+        -- 添加触摸反馈
+        button.MouseButton1Down:Connect(function()
+            TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(40, 40, 60)}):Play()
+        end)
+        
+        button.MouseButton1Up:Connect(function()
+            TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = Color3.fromRGB(60, 60, 80)}):Play()
+        end)
+        
+        button.Parent = buttonContainer
+        return button
+    end
+    
+    -- 创建三个按钮
+    local frontflipButton = createMobileButton("FrontflipButton", "前空翻\n(Z)", 1, doFrontflip)
+    local backflipButton = createMobileButton("BackflipButton", "后空翻\n(X)", 2, doBackflip)
+    local airjumpButton = createMobileButton("AirjumpButton", "无限跳\n(C)", 3, doAirjump)
+    
+    -- 调整按钮容器大小以适应按钮
+    uiListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        buttonContainer.Size = UDim2.new(0, uiListLayout.AbsoluteContentSize.X, 0, 80)
+        buttonContainer.Position = UDim2.new(0.5, -uiListLayout.AbsoluteContentSize.X/2, 1, -90)
+    end)
+end
+
+print("Flip script loaded.")
