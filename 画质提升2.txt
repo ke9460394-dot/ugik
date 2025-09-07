@@ -1,0 +1,89 @@
+-- 终极画质增强脚本 (含星空与动态天气)
+local Lighting = game:GetService("Lighting")
+local Terrain = workspace.Terrain
+local RunService = game:GetService("RunService")
+
+-- 1. 清除默认效果，避免冲突
+for _, child in ipairs(Lighting:GetChildren()) do
+    if child:IsA("PostEffect") or child:IsA("Sky") then
+        child:Destroy()
+    end
+end
+
+-- 2. 创建核心后期特效
+local colorCorrection = Instance.new("ColorCorrectionEffect")
+local bloom = Instance.new("BloomEffect")
+local sunRays = Instance.new("SunRaysEffect")
+local atmosphere = Instance.new("Atmosphere")
+
+colorCorrection.Parent = Lighting
+bloom.Parent = Lighting
+sunRays.Parent = Lighting
+atmosphere.Parent = Lighting
+
+-- 3. 【核心修复】创建并设置一个全新的天空盒以显示星空
+local sky = Instance.new("Sky")
+sky.Parent = Lighting
+
+-- 设置一个包含清晰星空的高清天空盒
+sky.SkyboxBk = "rbxassetid://6444337006" -- 包含星空的深色夜空背景
+sky.SkyboxDn = "rbxassetid://6444336728"
+sky.SkyboxFt = "rbxassetid://6444337006"
+sky.SkyboxLf = "rbxassetid://6444337006"
+sky.SkyboxRt = "rbxassetid://6444337006"
+sky.SkyboxUp = "rbxassetid://6444336728"
+
+sky.StarCount = 3000 -- 大幅增加星星数量
+
+-- 4. 高级画面与色彩设置
+colorCorrection.Contrast = 0.18 -- 增强对比，让物体轮廓更清晰
+colorCorrection.Brightness = 0.05
+colorCorrection.Saturation = 0.3 -- 提升饱和度，让颜色更鲜艳
+colorCorrection.TintColor = Color3.fromRGB(255, 242, 230) -- 暖色调，增强夕阳/晨曦感
+
+bloom.Intensity = 0.25 -- 提高强度，让光源和反射更亮
+bloom.Size = 48 -- 增大泛光范围
+bloom.Threshold = 0.85 -- 降低阈值，让更多区域产生泛光
+
+sunRays.Intensity = 0.25 -- 增强太阳光线的强度
+sunRays.Spread = 1.0
+
+-- 5. 环境与大气设置
+Lighting.GlobalShadows = true
+Lighting.ShadowSoftness = 0.05 -- 让阴影更锐利
+Lighting.Brightness = 2.8 -- 适当降低整体亮度以衬托效果
+Lighting.ExposureCompensation = 0.7 -- 增加曝光，提升暗部细节
+Lighting.FogColor = Color3.fromRGB(140, 158, 178) -- 更蓝的雾色，增强景深
+Lighting.FogEnd = 3000 -- 让雾效更近，层次感更强
+
+atmosphere.Density = 0.4 -- 增加大气密度
+atmosphere.Offset = 0.25
+atmosphere.Color = Color3.fromRGB(220, 220, 255)
+atmosphere.Decay = Color3.fromRGB(20, 25, 45)
+atmosphere.Glare = 0.15 -- 增加眩光
+atmosphere.Haze = 0.25 -- 增加薄雾
+
+-- 6. 增强的水面效果
+Terrain.WaterReflectance = 0.35 -- 提高反射率
+Terrain.WaterTransparency = 0.88
+Terrain.WaterWaveSize = 0.15 -- 增大波浪尺寸
+Terrain.WaterWaveSpeed = 25 -- 加快波浪速度
+Terrain.WaterColor = Color3.fromRGB(72, 141, 202) -- 更深的蓝色
+
+-- 7. 动态效果：让画面随时间变化
+local function updateTime()
+    Lighting.ClockTime = Lighting.ClockTime + 0.0005 -- 让时间缓慢流逝
+    
+    -- 根据时间动态调整一些效果
+    local timeFactor = math.sin(Lighting.ClockTime * math.pi / 12)
+    bloom.Intensity = 0.2 + timeFactor * 0.1
+    sunRays.Intensity = 0.2 + timeFactor * 0.1
+end
+
+-- 连接更新函数
+RunService.RenderStepped:Connect(updateTime)
+
+print("🎯 终极画质增强已加载！")
+print("✨ 包含星空效果与动态环境")
+print("🌊 增强的水面反射与波浪")
+print("🌅 动态时间与光线变化")
