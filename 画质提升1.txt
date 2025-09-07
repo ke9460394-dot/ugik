@@ -1,0 +1,138 @@
+-- 终极修复版画质增强脚本
+local Lighting = game:GetService("Lighting")
+local Terrain = workspace.Terrain
+local RunService = game:GetService("RunService")
+
+-- 安全清理所有特效
+for _, child in ipairs(Lighting:GetChildren()) do
+    if child:IsA("PostEffect") or child:IsA("Atmosphere") then
+        child:Destroy()
+    end
+end
+
+-- 修复所有错误配置
+local Config = {
+    Quality = "UltraRealistic",
+    EnableAdvancedShadows = true,
+    EnablePhysicalLighting = true,
+    EnableCinematicEffects = true
+}
+
+-- 安全参数设置
+local SafePresets = {
+    BloomIntensity = 0.08,
+    BloomThreshold = 0.95,
+    MaxBrightness = 3.5,
+    ShadowSoftness = 0.06,
+    FOV = 70
+}
+
+-- 基础光照设置（完全兼容）
+Lighting.GlobalShadows = true
+Lighting.ShadowSoftness = SafePresets.ShadowSoftness
+Lighting.Brightness = SafePresets.MaxBrightness
+Lighting.ExposureCompensation = 0.5
+Lighting.EnvironmentSpecularScale = 1.2
+Lighting.EnvironmentDiffuseScale = 0.5
+Lighting.FogColor = Color3.fromRGB(130, 140, 160)
+Lighting.FogEnd = 8000
+Lighting.FogStart = 50
+Lighting.OutdoorAmbient = Color3.fromRGB(120, 130, 150)
+Lighting.GeographicLatitude = 40.0
+Lighting.ClockTime = 16.5
+
+-- 安全特效创建函数
+local function createEffect(effectType, properties)
+    local effect = Instance.new(effectType)
+    for prop, value in pairs(properties) do
+        if effect[prop] ~= nil then
+            effect[prop] = value
+        end
+    end
+    effect.Parent = Lighting
+    return effect
+end
+
+-- 修复的色彩校正系统
+local colorGrading = createEffect("ColorCorrectionEffect", {
+    Contrast = 0.15,
+    Brightness = 0.04,
+    Saturation = 0.25,
+    TintColor = Color3.fromRGB(255, 245, 235)
+})
+
+-- 修复的泛光效果
+local bloom = createEffect("BloomEffect", {
+    Intensity = SafePresets.BloomIntensity,
+    Size = 40,
+    Threshold = SafePresets.BloomThreshold
+})
+
+-- 修复的太阳光线
+local sunRays = createEffect("SunRaysEffect", {
+    Intensity = 0.22,
+    Spread = 0.8
+})
+
+-- 修复的景深效果
+local dof = createEffect("DepthOfFieldEffect", {
+    FarIntensity = 0.1,
+    FocusDistance = 35,
+    InFocusRadius = 22,
+    NearIntensity = 0.3
+})
+
+-- 修复的大气效果
+local atmosphere = createEffect("Atmosphere", {
+    Density = 0.25,
+    Offset = 0.25,
+    Color = Color3.fromRGB(180, 190, 210),
+    Decay = Color3.fromRGB(35, 40, 50),
+    Haze = 0.12
+})
+
+-- 修复的水面设置（使用安全属性）
+Terrain.WaterReflectance = 0.2
+Terrain.WaterTransparency = 0.93
+Terrain.WaterWaveSize = 0.12
+Terrain.WaterWaveSpeed = 16
+Terrain.WaterColor = Color3.fromRGB(75, 135, 200)
+
+-- 修复的天空系统
+local sky = Lighting:FindFirstChildOfClass("Sky") or Instance.new("Sky")
+sky.Parent = Lighting
+sky.CelestialBodiesShown = true
+sky.StarCount = 3500
+
+-- 安全天空盒设置
+sky.SkyboxBk = "rbxassetid://2711140172"
+sky.SkyboxDn = "rbxassetid://2711140372"
+sky.SkyboxFt = "rbxassetid://2711140592"
+sky.SkyboxLf = "rbxassetid://2711140792"
+sky.SkyboxRt = "rbxassetid://2711141042"
+sky.SkyboxUp = "rbxassetid://2711141282"
+
+-- 修复的视角设置
+workspace.CurrentCamera.FieldOfView = SafePresets.FOV
+
+-- 修复的动态光照更新
+local function updateLighting()
+    local time = os.time()
+    local subtleChange = math.sin(time * 0.1) * 0.03
+    
+    Lighting.ClockTime = (time / 3600) % 24
+    
+    -- 安全亮度调整
+    local targetBrightness = 3.2 + math.sin(Lighting.ClockTime * math.pi / 12) * 0.3
+    Lighting.Brightness = math.clamp(targetBrightness, 2.8, 3.5)
+    
+    -- 安全特效调整
+    bloom.Intensity = SafePresets.BloomIntensity + subtleChange * 0.02
+end
+
+-- 安全连接更新
+RunService.RenderStepped:Connect(updateLighting)
+
+print("终极修复版画质增强已加载 - 无错误")
+print("亮度: "..Lighting.Brightness)
+print("特效数量: "..#Lighting:GetChildren())
