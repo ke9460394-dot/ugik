@@ -1,6 +1,6 @@
 ---不加密了二改可以删掉这个注释死全家我的b站UID：1531514159
 local Translations = {
-["Blade Ball Scripts"] = "刀刃球脚本Kenny汉化b站UID:1531514159",
+["Blade Ball Scripts"] = "nodexKenny汉化b站UID:1531514159",
 ["Under Ball"] = "球下方",
 ["Auto Farm"] = "自动刷取",
 ["X Orbit"] = "X 轨道",
