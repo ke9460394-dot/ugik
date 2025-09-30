@@ -31,7 +31,6 @@ local Translations = {
 ["Rejoin Server"] = "重新加入服务器",
 ["Server Hop"] = "服务器跳跃",
 ["Teleport to PlaceId"] = "传送至地点ID",
-["Blade Ball Scripts"] = "刀刃球脚本",
 ["Blatant"] = "公然",
 ["Ability"] = "能力",
 ["Misc"] = "杂项",
