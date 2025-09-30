@@ -72,7 +72,6 @@ local Translations = {
 ["TeamfortressBonk"] = "团队要塞Bonk",
 ["TeamfortressBell"] = "团队要塞铃声",
 ["Custom"] = "自定义",
-["Blade Ball Scripts"] = "刀刃球脚本",
 ["Blatant"] = "公然",
 ["Combat"] = "战斗",
 ["Ability"] = "能力",
