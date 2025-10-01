@@ -1,7 +1,7 @@
 -----不加密了二改可以别删这个注释我的b站UID:1531514159
 local Translations = {["Configuration"] = "配置",
 ["Market"] = "商店",
-["v0010"] = "Kenny汉化b站UID:1531514159",
+["v"] = "Kenny汉化b站UID:1531514159",
 ["Autos"] = "自动",
 ["Miscellaneous"] = "杂项",
 ["Settings"] = "设置",
