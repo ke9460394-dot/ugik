@@ -1,4 +1,3 @@
------不加密了二改可以别删这个注释我的b站UID:1531514159
 local Translations = {["John doe's animation pack"] = "John Doe 的动画包",
 ["COOLkid's animation pack"] = "COOLkid 的动画包",
 ["Noli's animation pack"] = "Noli 的动画包",
